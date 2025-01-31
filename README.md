@@ -1,7 +1,10 @@
 # SOEN_341_PROJECT
 SOEN341 Project and sprint repository
 
-Readme file test
+Collaborator Information (name, id, github username):
 
-Collaborators:
 Aren Kaspar
+40283361
+GitHub username: AK-23-23
+
+
