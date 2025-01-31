@@ -1,3 +1,13 @@
 
-31/01/2025 
+31/01/2025: 
+1. We conducted a 30-minutes meeting in between the tut and lab. 
+- Aren explained the issues, the branches, the main repository.
+- We proposed feautures for the project: 9images/gifs, files, calls) in addition to the 3 core ones (Text channels for group communication, direct messaging between users, role-based user permissions)
+- The languages we need to work with (Backend: JS / FrontEnd: JS)
+- The technologies: REACT, FIGMA, JS, HTML, CSS, NODE.JS, EXPRESS.JS, MYSQL
+2. We conducted a meeting with the TA (Farah Al fahimi): 
+- We should add him to our repository. 
+- Pull requests: asking requests from reviewers to accept the new changes to the branch. 
+- Push: when we make modification to the branch but its not validated yet. 
+- Creating files in Git. 
 -> 
