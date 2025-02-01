@@ -1,5 +1,4 @@
 # SOEN_341_PROJECT
----
 ### SOEN341 Project and sprint repository
 
 ## Collaborator Information (name, id, github username):
@@ -33,7 +32,7 @@ Github username: wassdak
 Github username : rimmch
 
 ## Description and core features: 
----
+
 The purpose of this project is to create a communication platform designed for interaction through text channels and direct messaging. Users will be able to create an account to communicate with another user or join channels to message multiple users at a time. Admin accounts can also be created to manage channels, messages and users.
 
 ##Languages and Technologies
