@@ -1,13 +1,20 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import "./LoginRegisterPage.css";
 
 function LoginRegisterPage() {
   const [isSignUp, setIsSignUp] = useState(false);
+  const [fadeIn, setFadeIn] = useState(false);
+
+  useEffect(() => {
+    setTimeout(() => {
+      setFadeIn(true);
+    }, 100); 
+  }, []);
 
   return (
-    <div className="auth-wrapper">
+    <div className={`auth-wrapper ${fadeIn ? "fade-in" : ""}`}>
       <div className="auth-container">
-        {/* Login Container */}
+        
         <div className="login-container">
           <div className="form-box sign-in">
             <h2>Sign in</h2>
@@ -17,7 +24,7 @@ function LoginRegisterPage() {
           </div>
         </div>
 
-        {/* Sign-up Container */}
+    
         <div className="sign-up-container">
           <div className="form-box sign-up">
             <h2>Create an Account</h2>
@@ -28,9 +35,9 @@ function LoginRegisterPage() {
           </div>
         </div>
 
-        {/* Overlay - Hides Sign-Up at Start */}
+        
         <div className={`overlay ${isSignUp ? "move-left" : ""}`}>
-          {/* Conditional Rendering for h1 and messages */}
+          
           {isSignUp ? (
             <>
               <h1 className="overlay-text">Join us!</h1>
