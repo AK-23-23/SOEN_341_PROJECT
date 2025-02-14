@@ -139,7 +139,16 @@
     max-width: 500px;
     text-align: center;
   }
-  
+  .user-type-selection {
+    justify-content: center;
+    width: 30%;
+    padding: 15px;
+    margin-bottom: 15px ;
+    border: 2px solid #ddd;
+    border-radius: 10px;
+    font-size: 1.2em;
+  }
+
   input {
     justify-content: center;
     width: 80%;
