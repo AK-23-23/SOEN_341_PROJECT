@@ -1,4 +1,5 @@
 import React from "react";
+import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 import LoginRegisterPage from "./LoginRegisterPage.jsx"; 
 import "./index.css";
 import Dashboard from "./Dashboard.jsx";
@@ -9,7 +10,7 @@ function App() {
     <div className="app-container">
       <AuthProvider>
       <LoginRegisterPage />
-      {/* <Dashboard /> */}
+      {/*<Dashboard />*/}
       </AuthProvider>
     </div>
   );
