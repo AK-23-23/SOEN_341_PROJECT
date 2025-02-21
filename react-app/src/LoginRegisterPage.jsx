@@ -10,18 +10,18 @@ function LoginRegisterPage() {
   const [isSignUp, setIsSignUp] = useState(false);
   const [fadeIn, setFadeIn] = useState(false);
   const [loading, setLoading] = useState(false)
-  const [userType, setUserType] = useState('user'); // Default to user
-  const [username, setUsername] = useState(""); // Only needed for sign-up
+  const [userType, setUserType] = useState('user'); 
+  const [username, setUsername] = useState(""); 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [error, setError] = useState(""); // State for error message
-  const [successMessage, setSuccessMessage] = useState(""); // State for success message
+  const [error, setError] = useState(""); 
+  const [successMessage, setSuccessMessage] = useState(""); 
   const { signup } = useAuth();
 
 
   const validateInputs = () => {
-    const emailValid = email && /\S+@\S+\.\S+/.test(email); // Check if email is filled and valid
-    const passwordValid = password; // Check if password is filled
+    const emailValid = email && /\S+@\S+\.\S+/.test(email); 
+    const passwordValid = password; 
     setError({
       email: !emailValid,
       password: !passwordValid,
@@ -33,38 +33,36 @@ function LoginRegisterPage() {
   };
 
   async function handleLogin(e) {
-    e.preventDefault(); // Prevent form from causing a page refresh
+    e.preventDefault(); 
 
-    // Clear previous messages.
+   
     setError("");
     setSuccessMessage("");
 
-    // Check if email field is provided.
+   
     if (!email) {
       setError("Email is required.");
       return;
     }
-    // Check if password field is provided.
+   
     if (!password) {
       setError("Password is required.");
       return;
     }
-    // Validate that the email provided matches a basic email pattern.
+   
     if (!/\S+@\S+\.\S+/.test(email)) {
       setError("Please provide a valid email address.");
       return;
     }
 
     try {
-      // Attempt to sign in with Firebase.
+    
       await signInWithEmailAndPassword(auth, email, password);
       setSuccessMessage("Successfully logged in!");
-      // Optionally, redirect to the dashboard page here.
-      // For example, using React Router's useNavigate:
-      // navigate("/dashboard");
+       navigate("/dashboard");
     } catch (err) {
       console.error("Error logging in:", err);
-      // Depending on the error code received from Firebase, display an appropriate message.
+     
       if (err.code === "auth/wrong-password") {
         setError("Incorrect password. Please try again.");
       } else if (err.code === "auth/user-not-found") {
@@ -86,11 +84,11 @@ function LoginRegisterPage() {
 
   async function handleRegisterForm(e) {
     e.preventDefault();
-    setError(""); // Clear previous error messages
-    setSuccessMessage(""); // Clear previous success messages
+    setError("");
+    setSuccessMessage(""); 
     setLoading(true);
 
-    // Validate that the email is properly formatted
+   
     if (!email.includes('@') || !email.includes('.')) {
       setError("Please enter a valid email address.");
       setLoading(false);
@@ -99,21 +97,21 @@ function LoginRegisterPage() {
 
     try {
       if (isSignUp) {
-        // Sign-Up Branch: Create the user via Auth then store additional data in Firestore
+       
         const userCredential = await signup(email, password);
         const user = userCredential.user;
         await setDoc(doc(db, "users", user.uid), {
           username: username,
           email: email,
           userType: userType
-          // Add additional fields if needed
+        
         });
         setSuccessMessage("Successfully signed up! You can now Login with the account created.");
       }
     } catch (err) {
       console.error("Authentication Error:", err);
       if (!isSignUp) {
-        // Error handling for login
+        
         if (err.code === "auth/wrong-password") {
           setError("Incorrect password. Please try again.");
         } else if (err.code === "auth/user-not-found") {
