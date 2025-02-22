@@ -1,12 +1,34 @@
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from "react-router-dom";
+import { auth } from "./firebase"; 
+import { signOut } from "firebase/auth"; 
 import './Dashboard.css';
 
 const Dashboard = () => {
   const [showPopup, setShowPopup] = useState(false);
+  const [fadeIn, setFadeIn] = useState(false); 
+  const navigate = useNavigate(); 
+
 
   const handleHelpClick = () => {
     setShowPopup(!showPopup);
   };
+
+ 
+  const handleLogout = async () => {
+    try {
+      setFadeIn(false); 
+      await new Promise((resolve) => setTimeout(resolve, 500)); 
+      await signOut(auth); 
+      navigate("/"); 
+    } catch (error) {
+      console.error("Error logging out:", error);
+    }
+  };
+
+  useEffect(() => {
+    setFadeIn(true); 
+  }, []);
 
   useEffect(() => {
     const link = document.createElement("link");
@@ -16,7 +38,7 @@ const Dashboard = () => {
   }, []);
 
   return (
-    <div className="dashboard">
+    <div className={`dashboard ${fadeIn ? 'fade-in' : 'fade-out'}`}>
       <div className="sidebar">
         <h2 id='channeltitle'>Channels</h2>
         <ul>
@@ -30,13 +52,17 @@ const Dashboard = () => {
           <h2 id='Welcome'>Welcome message <br /> yap yap</h2>
         </div>
 
+       
+        <button id="logout-button" onClick={handleLogout}>
+          Logout
+        </button>
+
         <span className="material-symbols-outlined">settings</span>
 
         <span className="help" onClick={handleHelpClick}>
           ?
         </span>
 
-       
         <div className={`popup-overlay ${showPopup ? 'active' : ''}`}>
           <div className="popup">
             <div className="popup-content">
