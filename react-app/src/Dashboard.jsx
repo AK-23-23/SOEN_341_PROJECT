@@ -1,9 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from "react-router-dom";
-import { auth } from "./firebase"; 
+import { auth, db } from "./firebase"; 
 import { signOut, updateEmail, updatePassword, EmailAuthProvider, reauthenticateWithCredential, sendEmailVerification } from "firebase/auth"; 
-import { doc, getDoc, setDoc } from "firebase/firestore"; 
-import { db } from "./firebase"; 
+import { doc, getDoc, setDoc, collection, getDocs } from "firebase/firestore"; 
 import './Dashboard.css';
 
 const Dashboard = () => {
@@ -16,6 +15,7 @@ const Dashboard = () => {
   const [newEmail, setNewEmail] = useState("");
   const [newPassword, setNewPassword] = useState("");
   const [currentPassword, setCurrentPassword] = useState("");
+  const [users, setUsers] = useState([]);
 
   const navigate = useNavigate();
 
@@ -55,9 +55,28 @@ const Dashboard = () => {
       }
     };
 
+    const fetchUsers = async () => {
+      try {
+        const user = auth.currentUser;
+        if (!user) return;
+
+        const usersRef = collection(db, "users");
+        const usersSnapshot = await getDocs(usersRef);
+        
+        const usersList = usersSnapshot.docs
+          .map(doc => ({ id: doc.id, ...doc.data() }))
+          .filter(u => u.id !== user.uid); 
+
+        setUsers(usersList);
+      } catch (error) {
+        console.error("Error fetching users:", error);
+      }
+    };
+
     const unsubscribe = auth.onAuthStateChanged((user) => {
       if (user) {
         fetchUserData();
+        fetchUsers();
       } else {
         setUsername("Guest");
         setEmail("");
@@ -118,6 +137,10 @@ const Dashboard = () => {
     }
   };
 
+  const handleUserClick = (userId) => {
+    navigate(`/chat/${userId}`);
+  };
+
   return (
     <div className={`dashboard ${fadeIn ? "fade-in" : "fade-out"}`}>
       <div className="sidebar">
@@ -126,6 +149,14 @@ const Dashboard = () => {
           <li>General</li>
           <li>Project Help</li>
           <li>Social</li>
+        </ul>
+        <h2>Direct Messages</h2>
+        <ul>
+          {users.map((user) => (
+            <li key={user.id} onClick={() => handleUserClick(user.id)}>
+              {user.username || "Unknown User"}
+            </li>
+          ))}
         </ul>
       </div>
       <div className="chat">
