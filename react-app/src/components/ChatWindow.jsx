@@ -1,17 +1,12 @@
 import React, { useState, useEffect, useRef } from "react";
-import { useParams, useNavigate } from "react-router-dom";
-import { auth, db } from "./firebase";
+import { auth, db } from "../firebase";
 import { collection, addDoc, query, where, onSnapshot, orderBy, getDocs } from "firebase/firestore";
-import "./Chat.css";
+import "../Chat.css";
 
-const Chat = () => {
-  const { userId } = useParams();
-  const navigate = useNavigate();
+const ChatWindow = ({ userId }) => {
   const [messages, setMessages] = useState([]);
   const [newMessage, setNewMessage] = useState("");
   const [recipient, setRecipient] = useState(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState("");
   const messagesEndRef = useRef(null);
 
   useEffect(() => {
@@ -23,9 +18,6 @@ const Chat = () => {
         if (user) setRecipient(user.data());
       } catch (error) {
         console.error("Error fetching recipient:", error);
-        setError("Failed to load recipient details.");
-      } finally {
-        setLoading(false);
       }
     };
 
@@ -45,10 +37,13 @@ const Chat = () => {
     );
 
     const unsubscribe = onSnapshot(q, (snapshot) => {
-      setMessages(snapshot.docs.map((doc) => ({
+      const messageData = snapshot.docs.map((doc) => ({
         id: doc.id,
         ...doc.data()
-      })));
+      }));
+      
+      setMessages(messageData);
+      scrollToBottom();
     });
 
     return () => unsubscribe();
@@ -57,10 +52,6 @@ const Chat = () => {
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   };
-
-  useEffect(() => {
-    scrollToBottom();
-  }, [messages]);
 
   const sendMessage = async (e) => {
     e.preventDefault();
@@ -81,23 +72,15 @@ const Chat = () => {
       setNewMessage("");
     } catch (error) {
       console.error("Error sending message:", error);
-      setError("Failed to send message");
     }
   };
 
-  if (loading) return <div className="loading">Loading...</div>;
-
   return (
-    <div className="chat-container">
+    <div className="chat-window">
       <div className="chat-header">
-        <div className="chat-header-left">
-          <button className="back-button" onClick={() => navigate("/dashboard")}>
-            ←
-          </button>
-          <div className="recipient-info">
-            <span className="recipient-name">{recipient?.username || "User"}</span>
-            <span className="recipient-status">Online</span>
-          </div>
+        <div className="recipient-info">
+          <span className="recipient-name">{recipient?.username || "User"}</span>
+          <span className="recipient-status">Online</span>
         </div>
       </div>
 
@@ -113,7 +96,7 @@ const Chat = () => {
                   {msg.senderId === auth.currentUser?.uid ? "You" : recipient?.username}
                 </span>
                 <span className="message-time">
-                  {new Date(msg.timestamp?.toDate()).toLocaleTimeString()}
+                  {msg.timestamp && new Date(msg.timestamp.toDate ? msg.timestamp.toDate() : msg.timestamp).toLocaleTimeString()}
                 </span>
               </div>
               <div className="message-content">{msg.text}</div>
@@ -135,10 +118,8 @@ const Chat = () => {
           Send
         </button>
       </form>
-
-      {error && <div className="error-message">{error}</div>}
     </div>
   );
 };
 
-export default Chat;
+export default ChatWindow; 

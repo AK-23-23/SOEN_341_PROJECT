@@ -4,6 +4,7 @@ import { auth, db } from "./firebase";
 import { signOut, updateEmail, updatePassword, EmailAuthProvider, reauthenticateWithCredential, sendEmailVerification } from "firebase/auth"; 
 import { doc, getDoc, setDoc, collection, getDocs } from "firebase/firestore"; 
 import './Dashboard.css';
+import ChatWindow from './components/ChatWindow';
 
 const Dashboard = () => {
   const [showHelpPopup, setShowHelpPopup] = useState(false);
@@ -16,6 +17,7 @@ const Dashboard = () => {
   const [newPassword, setNewPassword] = useState("");
   const [currentPassword, setCurrentPassword] = useState("");
   const [users, setUsers] = useState([]);
+  const [selectedUser, setSelectedUser] = useState(null);
 
   const navigate = useNavigate();
 
@@ -138,7 +140,7 @@ const Dashboard = () => {
   };
 
   const handleUserClick = (userId) => {
-    navigate(`/chat/${userId}`);
+    setSelectedUser(userId);
   };
 
   return (
@@ -151,81 +153,81 @@ const Dashboard = () => {
           <li>Social</li>
         </ul>
         <h2>Direct Messages</h2>
-        <ul>
+        <ul className="user-list">
           {users.map((user) => (
-            <li key={user.id} onClick={() => handleUserClick(user.id)}>
+            <li 
+              key={user.id} 
+              onClick={() => handleUserClick(user.id)}
+              className={selectedUser === user.id ? "active" : ""}
+            >
               {user.username || "Unknown User"}
             </li>
           ))}
         </ul>
-      </div>
-      <div className="chat">
-        <div className="idk">
-          <h2 id="Welcome">Welcome back,<br/> {username || "Guest"}</h2>
-        </div>
-
         <button id="logout-button" onClick={handleLogout}>Logout</button>
+      </div>
+      
+      <div className="main-content">
+        {selectedUser ? (
+          <ChatWindow userId={selectedUser} />
+        ) : (
+          <div id="Welcome">Select a user to start chatting</div>
+        )}
+      </div>
 
-        <span className="settings-icon" onClick={handleSettingsClick}>
-          <span className="material-symbols-outlined">settings</span>
-        </span>
-
-        <span className="help" onClick={handleHelpClick}>?</span>
-
-        <div className={`popup-overlay ${showHelpPopup ? "active" : ""}`}>
-          <div className="popup">
-            <div className="popup-content">
-              <h3>How to use the app:</h3>
-              <p>Help Message</p>
-              <button onClick={handleHelpClick}>Close</button>
-            </div>
+      <div className={`popup-overlay ${showHelpPopup ? "active" : ""}`}>
+        <div className="popup">
+          <div className="popup-content">
+            <h3>How to use the app:</h3>
+            <p>Help Message</p>
+            <button onClick={handleHelpClick}>Close</button>
           </div>
         </div>
+      </div>
 
-        <div className={`popup-overlay ${showSettingsPopup ? "active" : ""}`}>
-          <div className="setting-popup">
-            <div className="setting-popup-content">
-              <h3 className="title">Settings</h3>
-              <div className="input-group">
-                <label>Your username: {username || "Guest"}</label>
-                <input
-                  type="text"
-                  value={newUsername}
-                  onChange={(e) => setNewUsername(e.target.value)}
-                  placeholder="Enter new username"
-                />
-              </div>
-              <div className="input-group">
-                <label>Your email: {email || "Guest"}</label>
-                <input
-                  type="email"
-                  value={newEmail}
-                  onChange={(e) => setNewEmail(e.target.value)}
-                  placeholder="Enter new email"
-                />
-              </div>
-              <div className="input-group">
-                <label>Current Password</label>
-                <input
-                  type="password"
-                  value={currentPassword}
-                  onChange={(e) => setCurrentPassword(e.target.value)}
-                  placeholder="Enter current password"
-                />
-              </div>
-              <div className="input-group">
-                <label>Password</label>
-                <input
-                  type="password"
-                  value={newPassword}
-                  onChange={(e) => setNewPassword(e.target.value)}
-                  placeholder="Enter new password"
-                />
-              </div>
-             
-              <button className="update-button" onClick={handleUpdate}>Update</button>
-              <button className="close-button" onClick={handleSettingsClick}>Close</button>
+      <div className={`popup-overlay ${showSettingsPopup ? "active" : ""}`}>
+        <div className="setting-popup">
+          <div className="setting-popup-content">
+            <h3 className="title">Settings</h3>
+            <div className="input-group">
+              <label>Your username: {username || "Guest"}</label>
+              <input
+                type="text"
+                value={newUsername}
+                onChange={(e) => setNewUsername(e.target.value)}
+                placeholder="Enter new username"
+              />
             </div>
+            <div className="input-group">
+              <label>Your email: {email || "Guest"}</label>
+              <input
+                type="email"
+                value={newEmail}
+                onChange={(e) => setNewEmail(e.target.value)}
+                placeholder="Enter new email"
+              />
+            </div>
+            <div className="input-group">
+              <label>Current Password</label>
+              <input
+                type="password"
+                value={currentPassword}
+                onChange={(e) => setCurrentPassword(e.target.value)}
+                placeholder="Enter current password"
+              />
+            </div>
+            <div className="input-group">
+              <label>Password</label>
+              <input
+                type="password"
+                value={newPassword}
+                onChange={(e) => setNewPassword(e.target.value)}
+                placeholder="Enter new password"
+              />
+            </div>
+           
+            <button className="update-button" onClick={handleUpdate}>Update</button>
+            <button className="close-button" onClick={handleSettingsClick}>Close</button>
           </div>
         </div>
       </div>
