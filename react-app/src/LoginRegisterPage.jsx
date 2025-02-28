@@ -191,9 +191,6 @@ function LoginRegisterPage() {
             >
               {isSignUp ? "Sign Up" : "Login"}
             </button>
-            <p onClick={() => setIsSignUp(!isSignUp)}>
-              {isSignUp ? "Already have an account? Login" : "Don't have an account? Sign Up"}
-            </p>
           </div>
         </div>
 

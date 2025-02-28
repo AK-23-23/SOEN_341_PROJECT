@@ -1,9 +1,17 @@
-
-body {
+body, html {
     margin: 0;
+    padding: 0;
+    height: 100%;
+    width: 100%;
     font-family: Arial, sans-serif;
     background-color: #36393f;
     color: #dcddde;
+    overflow: hidden;
+}
+
+#root {
+    height: 100%;
+    width: 100%;
 }
 
 #Welcome{
@@ -25,7 +33,8 @@ body {
 
 .dashboard {
     display: flex;
-    height: 100vh;
+    height: 100%;
+    width: 100%;
 }
 
 .sidebar {
@@ -33,10 +42,14 @@ body {
     background-color: #232425;
     padding: 20px;
     box-sizing: border-box;
-    overflow: hidden;
-    border-radius: 0 40px 40px 0; 
+    overflow-y: auto;
     border-right: 3px solid #dcddde;
     transition: width 0.5s ease, background-color 0.5s ease;
+    margin: 0;
+    position: fixed;
+    left: 0;
+    top: 0;
+    bottom: 0;
 }
 
 .sidebar:hover {
@@ -67,10 +80,10 @@ body {
   .main-content {
     flex: 1;
     display: flex;
-    justify-content: center;
-    align-items: center;
+    flex-direction: column;
     background-color: #36393f;
-    padding: 20px;
+    overflow: hidden;
+    margin-left: 220px;
   }
   .material-symbols-outlined:hover {
     filter: drop-shadow(0 0 5px white)
@@ -181,27 +194,20 @@ body {
 }
   
   #logout-button {
-    position: absolute;
-    top: 5px;
-    right: 20px;
-    padding: 6px 12px; 
-    background-color: #ff4d4d; 
+    margin-top: 20px;
+    padding: 10px;
+    background-color: #ff4d4d;
     color: white;
+    border: none;
     border-radius: 20px;
     cursor: pointer;
-    font-size: 14px; 
-    font-weight: 700; 
-    transition: background-color 0.2s ease; 
-    width: 100px;
-    height: 40px;
-    transition: box-shadow 0.3s ease;
+    font-size: 14px;
+    font-weight: 700;
+    transition: background-color 0.2s ease;
   }
   
   #logout-button:hover {
     background-color: red;
-    box-shadow: 0 0 5px red,
-    0 0 25px red, 0 0 50px red,
-    0 0 100px red;
   }
 
   .fade-in {
@@ -321,5 +327,28 @@ body {
     color: #ffffff;
   }
 
+.user-list {
+    list-style-type: none;
+    padding: 0;
+    margin: 0;
+}
+
+.user-list li {
+    padding: 8px 12px;
+    margin-bottom: 4px;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.user-list li:hover {
+    background-color: #393c43;
+}
+
+.user-list li.active {
+    background-color: #393c43;
+    color: #fff;
+    font-weight: bold;
+}
 
   
