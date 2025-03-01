@@ -1,7 +1,16 @@
 import React, { useState, useEffect, useRef } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { auth, db } from "./firebase";
-import { collection, addDoc, query, where, onSnapshot, orderBy, getDocs } from "firebase/firestore";
+import {
+  collection,
+  addDoc,
+  query,
+  where,
+  onSnapshot,
+  orderBy,
+  getDocs,
+  serverTimestamp
+} from "firebase/firestore";
 import "./Chat.css";
 
 const Chat = () => {
@@ -23,7 +32,7 @@ const Chat = () => {
         if (user) setRecipient(user.data());
       } catch (error) {
         console.error("Error fetching recipient:", error);
-        setError("Failed to load recipient details.");
+        setError("Error loading recipient.");
       } finally {
         setLoading(false);
       }
@@ -45,10 +54,14 @@ const Chat = () => {
     );
 
     const unsubscribe = onSnapshot(q, (snapshot) => {
-      setMessages(snapshot.docs.map((doc) => ({
+      const fetchedMessages = snapshot.docs.map((doc) => ({
         id: doc.id,
-        ...doc.data()
-      })));
+        ...doc.data(),
+      }));
+
+      console.log("Fetched Messages:", fetchedMessages); 
+
+      setMessages(fetchedMessages);
     });
 
     return () => unsubscribe();
@@ -75,15 +88,38 @@ const Chat = () => {
         senderName: user.displayName || user.email,
         receiverId: userId,
         text: newMessage,
-        timestamp: new Date(),
+        timestamp: serverTimestamp(), 
       });
 
       setNewMessage("");
     } catch (error) {
       console.error("Error sending message:", error);
-      setError("Failed to send message");
+      setError("Failed to send message.");
     }
   };
+
+  useEffect(() => {
+    if (!userId || !auth.currentUser) return;
+  
+    const chatId = auth.currentUser.uid < userId
+      ? `${auth.currentUser.uid}_${userId}`
+      : `${userId}_${auth.currentUser.uid}`;
+  
+    console.log("Listening for messages with chatId:", chatId);
+  
+    const messagesRef = collection(db, "messages");
+    const q = query(messagesRef, where("chatId", "==", chatId), orderBy("timestamp", "asc"));
+  
+    const unsubscribe = onSnapshot(q, (snapshot) => {
+      console.log("Snapshot updated:", snapshot.docs.length);
+      setMessages(snapshot.docs.map(doc => ({
+        id: doc.id,
+        ...doc.data()
+      })));
+    });
+  
+    return () => unsubscribe();
+  }, [userId, auth.currentUser]);
 
   if (loading) return <div className="loading">Loading...</div>;
 
@@ -113,7 +149,9 @@ const Chat = () => {
                   {msg.senderId === auth.currentUser?.uid ? "You" : recipient?.username}
                 </span>
                 <span className="message-time">
-                  {new Date(msg.timestamp?.toDate()).toLocaleTimeString()}
+                  {msg.timestamp?.seconds
+                    ? new Date(msg.timestamp.seconds * 1000).toLocaleTimeString()
+                    : "Sending..."}
                 </span>
               </div>
               <div className="message-content">{msg.text}</div>
