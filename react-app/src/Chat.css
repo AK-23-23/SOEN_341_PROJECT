@@ -48,11 +48,31 @@
   flex-direction: column;
   gap: 4px;
   padding: 8px 16px;
-  border-radius: 4px;
+  border-radius: 8px;
+  max-width: 60%;
+}
+
+
+.message.received {
+  align-self: flex-start;
+  background-color: #3a4350;
+  border-top-left-radius: 0;
+}
+
+
+.message.sent {
+  align-self: flex-end;
+  background-color: #5865f2;
+  color: white;
+  border-top-right-radius: 0;
 }
 
 .message:hover {
   background-color: #32353b;
+}
+
+.message.sent:hover {
+  background-color: #4752c4;
 }
 
 .message-header {
@@ -72,15 +92,16 @@
 }
 
 .message-content {
-  color: #dcddde;
   line-height: 1.375;
 }
+
 
 .message-input-container {
   padding: 16px;
   background-color: #40444b;
   border-top: 1px solid #202225;
   display: flex;
+  border-radius: 30px;
   gap: 16px;
 }
 
@@ -104,14 +125,14 @@
 
 .send-button {
   background-color: #5865f2;
-  width:fit-content;
+  width: fit-content;
   color: white;
   border: none;
-  border-radius: 4px;
-  padding: 2px 24px; /* Reduced padding for a smaller button */
+  border-radius: 30px;
+  padding: 2px 24px;
   cursor: pointer;
   font-weight: 500;
-  font-size: 14px; /* Adjust font size for a smaller appearance */
+  font-size: 14px;
 }
 
 .send-button:hover {
