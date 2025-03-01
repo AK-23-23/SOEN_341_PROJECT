@@ -179,17 +179,15 @@ const Dashboard = () => {
       </div>
 
       <div className="main-content">
-  <h2 id="Welcome">
-     {userType === 'Admin' ? 'You logged in as an Admin' : ''}
-  </h2>
+  {userType === 'Admin' && <h2 className="admin-message">You logged in as an Admin</h2>}
   <div className="header-buttons">
     <button className="icon-button settings-button" onClick={handleSettingsClick} title="Settings">
       <span className="material-symbols-outlined">settings</span>
     </button>
   </div>
-  {selectedUser ? <ChatWindow userId={selectedUser} /> : null}
-</div>
 
+  {selectedUser ? <ChatWindow userId={selectedUser} /> : <div id="Welcome">Welcome back!</div>}
+</div>
 
 
      
