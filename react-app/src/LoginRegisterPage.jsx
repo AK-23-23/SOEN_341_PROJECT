@@ -1,23 +1,26 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";  //import hooks from react, in this case the important one is useState, to check the states
+//                                                  of components, useEffect is used to run side effects in components like data fetching and animations
 import "./LoginRegisterPage.css";
-import { getFirestore, doc, setDoc } from 'firebase/firestore';
+import { getFirestore, doc, setDoc } from 'firebase/firestore';    //store users in database
 import { auth, db } from './firebase';
 import { createUserWithEmailAndPassword, signInWithEmailAndPassword } from 'firebase/auth';
 import { useAuth } from "../context/AuthContext";
 import { useNavigate } from "react-router-dom"; 
 
 function LoginRegisterPage() {
-  const [isSignUp, setIsSignUp] = useState(false);
+  const [isSignUp, setIsSignUp] = useState(false);    //check if user is logged in
   const [fadeIn, setFadeIn] = useState(false);
-  const [loading, setLoading] = useState(false);
-  const [userType, setUserType] = useState('user');
+  const [loading, setLoading] = useState(false);   //disable the button to post the form to avoid multiple login
+  const [userType, setUserType] = useState('user');        
   const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
+  const [password, setPassword] = useState("");    //these lines store the information about the user
   const [error, setError] = useState("");
   const [successMessage, setSuccessMessage] = useState("");
   const { signup } = useAuth();
   const navigate = useNavigate(); 
+
+  //checks the email and password to see if they are valid
 
   const validateInputs = () => {
     const emailValid = email && /\S+@\S+\.\S+/.test(email);
@@ -43,8 +46,8 @@ function LoginRegisterPage() {
       return;
     }
 
-    if (!password) {
-      setError("Password is required.");
+    if (!password) { 
+      setError("Password is required.");               //this function checks if anything is empty or invalid, if not redirect to dashboard
       return;
     }
 
@@ -92,7 +95,7 @@ function LoginRegisterPage() {
 
     try {
       if (isSignUp) {
-        const userCredential = await signup(email, password);
+        const userCredential = await signup(email, password);       //this function checks if the user is signed up or not
         const user = userCredential.user;
         await setDoc(doc(db, "users", user.uid), {
           username: username,
@@ -159,7 +162,7 @@ function LoginRegisterPage() {
             <select
               className="user-type-selection"
               value={userType}
-              onChange={(e) => setUserType(e.target.value)}
+              onChange={(e) => setUserType(e.target.value)} 
             >
               <option value="User">User</option>
               <option value="Admin">Admin</option>

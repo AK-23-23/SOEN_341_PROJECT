@@ -3,7 +3,7 @@ import { initializeApp } from "firebase/app";
 import { getAuth, initializeAuth } from "firebase/auth";
 import { getFirestore } from "firebase/firestore";
 
-// TODO: Add SDKs for Firebase products
+// todo: Add SDKs for Firebase products
 // https://firebase.google.com/docs/web/setup#available-libraries
 
 
