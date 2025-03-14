@@ -4,28 +4,7 @@ import { auth, db } from './firebase';
 import { signOut, updateEmail, updatePassword, EmailAuthProvider, reauthenticateWithCredential, sendEmailVerification } from 'firebase/auth';
 import { doc, getDoc, setDoc, collection, getDocs } from 'firebase/firestore';
 import './Dashboard.css';
-import ChatWindow from './components/ChatWindow';
-
-
-//icon from google font 
-
-const materialIconsLink = document.createElement('link');
-materialIconsLink.rel = 'stylesheet';
-materialIconsLink.href = 'https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200&icon_names=settings';
-document.head.appendChild(materialIconsLink);
-
-
-const materialIconsStyle = document.createElement('style');
-materialIconsStyle.innerHTML = `
-  .material-symbols-outlined {
-    font-variation-settings:
-    'FILL' 0,
-    'wght' 400,
-    'GRAD' 0,
-    'opsz' 24
-  }
-`;
-document.head.appendChild(materialIconsStyle);
+import Chat from './Chat'; 
 
 const Dashboard = () => {
   const [showSettingsPopup, setShowSettingsPopup] = useState(false);
@@ -38,16 +17,8 @@ const Dashboard = () => {
   const [currentPassword, setCurrentPassword] = useState('');
   const [users, setUsers] = useState([]);
   const [selectedUser, setSelectedUser] = useState(null);
+  const [selectedGroup, setSelectedGroup] = useState(null); 
   const [userType, setUserType] = useState('');
-
-  /*showSettingsPopup → Controls the visibility of the settings popup.
-fadeIn → Controls fade-in animation.
-username, newUsername → Stores and updates the username.
-email, newEmail → Stores and updates the email.
-newPassword, currentPassword → Stores new and current password for authentication.          
-users → Stores the list of users from Firestore.
-selectedUser → Keeps track of the user selected for messaging.
-userType → Stores whether the logged-in user is an admin or a regular user. */
 
   const navigate = useNavigate();
 
@@ -55,7 +26,7 @@ userType → Stores whether the logged-in user is an admin or a regular user. */
     setFadeIn(true);
   }, []);
 
-  //fetch data from the user to use it on the dashboard for exemple when it writes the username 
+  // Fetch user data
   useEffect(() => {
     const fetchUserData = async () => {
       const user = auth.currentUser;
@@ -63,15 +34,15 @@ userType → Stores whether the logged-in user is an admin or a regular user. */
         try {
           setEmail(user.email || '');
           setNewEmail(user.email || '');
-    
+
           const userDocRef = doc(db, 'users', user.uid);
           const userDocSnap = await getDoc(userDocRef);
-    
+
           if (userDocSnap.exists()) {
             const userData = userDocSnap.data();
             setUsername(userData.username || 'Guest');
             setNewUsername(userData.username || '');
-            setUserType(userData.userType || 'User'); 
+            setUserType(userData.userType || 'User');
           } else {
             console.warn('No user data found in Firestore.');
           }
@@ -81,8 +52,7 @@ userType → Stores whether the logged-in user is an admin or a regular user. */
       }
     };
 
-    //retrieves all users from the databse to write them on the left side
-
+    // Fetch all users
     const fetchUsers = async () => {
       try {
         const user = auth.currentUser;
@@ -163,17 +133,29 @@ userType → Stores whether the logged-in user is an admin or a regular user. */
 
   const handleUserClick = (userId) => {
     setSelectedUser(userId);
+    setSelectedGroup(null); 
+  };
+
+  const handleGroupClick = (groupId) => {
+    setSelectedGroup(groupId);
+    setSelectedUser(null); 
   };
 
   return (
     <div className={`dashboard ${fadeIn ? 'fade-in' : 'fade-out'}`}>
       <div className="sidebar">
-        <h2 id="channeltitle">Channels</h2>
-        <ul>
-          <li>General</li>
-          <li>Project Help</li>
-          <li>Social</li>
-        </ul>
+        <h2 id="channeltitle">Groups</h2>
+        <div className="group-list">
+          <div className="group-item" onClick={() => handleGroupClick("general")}>
+            General Chat
+          </div>
+          <div className="group-item" onClick={() => handleGroupClick("project Help")}>
+            Project Help
+          </div>
+          <div className="group-item" onClick={() => handleGroupClick("social")}>
+            Social
+          </div>
+        </div>
         <h2 id="Message-title">Users</h2>
         <ul className="user-list">
           {users.map((user) => (
@@ -192,16 +174,16 @@ userType → Stores whether the logged-in user is an admin or a regular user. */
       </div>
 
       <div className="main-content">
-  {userType === 'Admin' && <h2 className="admin-message">You logged in as an Admin</h2>}
-  <div className="header-buttons">
-    <button className="icon-button settings-button" onClick={handleSettingsClick} title="Settings">
-      <span className="material-symbols-outlined">settings</span>
-    </button>
-  </div>
+        {userType === 'Admin' && <h2 className="admin-message">You logged in as an Admin</h2>}
 
-  {selectedUser ? <ChatWindow userId={selectedUser} /> : <div id="Welcome">Welcome back!</div>}
-</div>
-
+        {selectedUser ? (
+          <Chat userId={selectedUser} />
+        ) : selectedGroup ? (
+          <Chat groupId={selectedGroup} />
+        ) : (
+          <div id="Welcome">Welcome back!</div>
+        )}
+      </div>
 
      
       <div className={`popup-overlay ${showSettingsPopup ? 'active' : ''}`}>
