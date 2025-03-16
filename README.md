@@ -58,7 +58,5 @@ The purpose of this project is to create a communication platform designed for i
 
 * HTML, CSS, Javascript
 * React.js
-* Express.js & Node.js
-
-* MySQL
+* Firebase & Node.js
 * Figma
