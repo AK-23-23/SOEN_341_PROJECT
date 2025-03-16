@@ -1,47 +1,41 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { auth, db } from './firebase';
-import { signOut, updateEmail, updatePassword, EmailAuthProvider, reauthenticateWithCredential, sendEmailVerification } from 'firebase/auth';
-import { doc, getDoc, setDoc, collection, getDocs } from 'firebase/firestore';
+import { signOut } from 'firebase/auth';
+import { doc, getDoc, setDoc, collection, getDocs, deleteDoc, updateDoc } from 'firebase/firestore';
 import './Dashboard.css';
-import Chat from './Chat'; 
+import Chat from './Chat';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faPlus, faTrash } from '@fortawesome/free-solid-svg-icons';
 
 const Dashboard = () => {
   const [showSettingsPopup, setShowSettingsPopup] = useState(false);
   const [fadeIn, setFadeIn] = useState(false);
   const [username, setUsername] = useState('');
-  const [newUsername, setNewUsername] = useState('');
-  const [email, setEmail] = useState('');
-  const [newEmail, setNewEmail] = useState('');
-  const [newPassword, setNewPassword] = useState('');
-  const [currentPassword, setCurrentPassword] = useState('');
   const [users, setUsers] = useState([]);
   const [selectedUser, setSelectedUser] = useState(null);
-  const [selectedGroup, setSelectedGroup] = useState(null); 
+  const [selectedGroup, setSelectedGroup] = useState(null);
   const [userType, setUserType] = useState('');
-
+  const [groups, setGroups] = useState([]); // State to store groups
+  const [newGroupName, setNewGroupName] = useState(''); // State for new group name
+  const [newMemberId, setNewMemberId] = useState(''); // State for new member ID
   const navigate = useNavigate();
 
   useEffect(() => {
     setFadeIn(true);
   }, []);
 
-  // Fetch user data
   useEffect(() => {
     const fetchUserData = async () => {
       const user = auth.currentUser;
       if (user) {
         try {
-          setEmail(user.email || '');
-          setNewEmail(user.email || '');
-
           const userDocRef = doc(db, 'users', user.uid);
           const userDocSnap = await getDoc(userDocRef);
 
           if (userDocSnap.exists()) {
             const userData = userDocSnap.data();
             setUsername(userData.username || 'Guest');
-            setNewUsername(userData.username || '');
             setUserType(userData.userType || 'User');
           } else {
             console.warn('No user data found in Firestore.');
@@ -52,7 +46,6 @@ const Dashboard = () => {
       }
     };
 
-    // Fetch all users
     const fetchUsers = async () => {
       try {
         const user = auth.currentUser;
@@ -71,22 +64,29 @@ const Dashboard = () => {
       }
     };
 
+    const fetchGroups = async () => {
+      try {
+        const groupsRef = collection(db, 'groups');
+        const groupsSnapshot = await getDocs(groupsRef);
+        const groupsList = groupsSnapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
+        setGroups(groupsList);
+      } catch (error) {
+        console.error('Error fetching groups:', error);
+      }
+    };
+
     const unsubscribe = auth.onAuthStateChanged((user) => {
       if (user) {
         fetchUserData();
         fetchUsers();
+        fetchGroups();
       } else {
         setUsername('Guest');
-        setEmail('');
       }
     });
 
     return () => unsubscribe();
   }, []);
-
-  const handleSettingsClick = () => {
-    setShowSettingsPopup(!showSettingsPopup);
-  };
 
   const handleLogout = async () => {
     try {
@@ -99,63 +99,125 @@ const Dashboard = () => {
     }
   };
 
-  const handleUpdate = async () => {
-    const user = auth.currentUser;
-
-    try {
-      if (newEmail || newPassword) {
-        const credential = EmailAuthProvider.credential(user.email, currentPassword);
-        await reauthenticateWithCredential(user, credential);
-      }
-
-      if (newUsername && newUsername !== username) {
-        await setDoc(doc(db, 'users', user.uid), { username: newUsername });
-        setUsername(newUsername);
-      }
-
-      if (newEmail && newEmail !== email) {
-        await updateEmail(user, newEmail);
-        await sendEmailVerification(user);
-        alert('Updated email');
-        return;
-      }
-
-      if (newPassword) {
-        await updatePassword(user, newPassword);
-      }
-
-      alert('Profile updated successfully!');
-    } catch (error) {
-      console.error('Error updating profile:', error);
-      alert('Failed to update profile: ' + error.message);
-    }
-  };
-
   const handleUserClick = (userId) => {
     setSelectedUser(userId);
-    setSelectedGroup(null); 
+    setSelectedGroup(null);
   };
 
   const handleGroupClick = (groupId) => {
     setSelectedGroup(groupId);
-    setSelectedUser(null); 
+    setSelectedUser(null);
   };
+
+  const handleCreateGroup = async () => {
+    if (!newGroupName.trim()) return;
+
+    try {
+      const groupRef = doc(db, 'groups', newGroupName);
+      await setDoc(groupRef, {
+        name: newGroupName,
+        members: [], // Start with an empty members list
+      });
+      setGroups([...groups, { id: newGroupName, name: newGroupName, members: [] }]);
+      setNewGroupName('');
+    } catch (error) {
+      console.error('Error creating group:', error);
+    }
+  };
+
+  const handleDeleteGroup = async (groupId) => {
+    // Prevent deletion of basic groups
+    if (['General', 'Project Help', 'Social'].includes(groupId)) {
+      alert("You cannot delete this group.");
+      return;
+    }
+
+    try {
+      await deleteDoc(doc(db, 'groups', groupId));
+      setGroups(groups.filter((group) => group.id !== groupId));
+    } catch (error) {
+      console.error('Error deleting group:', error);
+    }
+  };
+
+  const handleAddMember = async () => {
+    if (!newMemberId.trim() || !selectedGroup) return;
+
+    try {
+      const groupRef = doc(db, 'groups', selectedGroup);
+      const groupDoc = await getDoc(groupRef);
+
+      if (groupDoc.exists()) {
+        const groupData = groupDoc.data();
+        const updatedMembers = [...(groupData.members || []), newMemberId];
+
+        await updateDoc(groupRef, { members: updatedMembers });
+        setGroups(groups.map(group => group.id === selectedGroup ? { ...group, members: updatedMembers } : group));
+        setNewMemberId('');
+      }
+    } catch (error) {
+      console.error('Error adding member:', error);
+    }
+  };
+
+  // Basic groups that cannot be deleted
+  const basicGroups = [
+    { id: 'General', name: 'General' },
+    { id: 'Project Help', name: 'Project Help' },
+    { id: 'Social', name: 'Social' },
+  ];
 
   return (
     <div className={`dashboard ${fadeIn ? 'fade-in' : 'fade-out'}`}>
       <div className="sidebar">
         <h2 id="channeltitle">Groups</h2>
         <div className="group-list">
-          <div className="group-item" onClick={() => handleGroupClick("general")}>
-            General Chat
-          </div>
-          <div className="group-item" onClick={() => handleGroupClick("project Help")}>
-            Project Help
-          </div>
-          <div className="group-item" onClick={() => handleGroupClick("social")}>
-            Social
-          </div>
+          {/* Render basic groups */}
+          {basicGroups.map((group) => (
+            <div key={group.id} className="group-item" onClick={() => handleGroupClick(group.id)}>
+              {group.name}
+            </div>
+          ))}
+          {/* Render dynamic groups from Firestore */}
+          {groups.map((group) => (
+            <div key={group.id} className="group-item" onClick={() => handleGroupClick(group.id)}>
+              {group.name}
+              {userType === 'Admin' && (
+                <button onClick={() => handleDeleteGroup(group.id)} className="delete-button">
+                  <FontAwesomeIcon icon={faTrash} />
+                </button>
+              )}
+            </div>
+          ))}
         </div>
+        {userType === 'Admin' && (
+          <div className="create-group">
+            <input
+              type="text"
+              value={newGroupName}
+              onChange={(e) => setNewGroupName(e.target.value)}
+              placeholder="New Group Name"
+              className="group-input"
+            />
+            <button onClick={handleCreateGroup} className="create-button">
+              <FontAwesomeIcon icon={faPlus} />
+            </button>
+          </div>
+        )}
+        {selectedGroup && userType === 'Admin' && (
+          <div className="add-member">
+            <input
+              type="text"
+              value={newMemberId}
+              onChange={(e) => setNewMemberId(e.target.value)}
+              placeholder="Add Member ID"
+              className="member-input"
+            />
+            <button onClick={handleAddMember} className="add-button">
+              <FontAwesomeIcon icon={faPlus} />
+            </button>
+          </div>
+        )}
         <h2 id="Message-title">Users</h2>
         <ul className="user-list">
           {users.map((user) => (
@@ -183,57 +245,6 @@ const Dashboard = () => {
         ) : (
           <div id="Welcome">Welcome back!</div>
         )}
-      </div>
-
-     
-      <div className={`popup-overlay ${showSettingsPopup ? 'active' : ''}`}>
-        <div className="setting-popup">
-          <div className="setting-popup-content">
-            <h3 className="title">Settings</h3>
-            <div className="input-group">
-              <label>Your username: {username || 'Guest'}</label>
-              <input
-                type="text"
-                value={newUsername}
-                onChange={(e) => setNewUsername(e.target.value)}
-                placeholder="Enter new username"
-              />
-            </div>
-            <div className="input-group">
-              <label>Your email: {email || 'Guest'}</label>
-              <input
-                type="email"
-                value={newEmail}
-                onChange={(e) => setNewEmail(e.target.value)}
-                placeholder="Enter new email"
-              />
-            </div>
-            <div className="input-group">
-              <label>Current Password</label>
-              <input
-                type="password"
-                value={currentPassword}
-                onChange={(e) => setCurrentPassword(e.target.value)}
-                placeholder="Enter current password"
-              />
-            </div>
-            <div className="input-group">
-              <label>Password</label>
-              <input
-                type="password"
-                value={newPassword}
-                onChange={(e) => setNewPassword(e.target.value)}
-                placeholder="Enter new password"
-              />
-            </div>
-            <button className="update-button" onClick={handleUpdate}>
-              Update
-            </button>
-            <button className="close-button" onClick={handleSettingsClick}>
-              Close
-            </button>
-          </div>
-        </div>
       </div>
     </div>
   );
