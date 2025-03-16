@@ -1,0 +1,213 @@
+:root {
+    font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
+    line-height: 1.5;
+    font-weight: 400;
+    color-scheme: light dark;
+    color: rgba(39, 37, 37, 0.87);
+    background-color: #ffffff;
+    font-synthesis: none;
+    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+  
+  body {
+    margin: 0;
+    display: flex;
+    place-items: center;
+    min-width: 100%;
+    min-height: 100%;
+    height: 100vh;
+  }
+  
+  h2 {
+    font-size: 2.5em;
+    color: rgb(255, 255, 255);
+    margin-top: -15px;
+  }
+  
+  h1 {
+    font-size: 4em;
+    line-height: 1.1;
+  }
+  
+  button {
+    border-radius: 8px;
+    border: 1px solid transparent;
+    padding: 1em 1.5em;
+    font-size: 1.2em;
+    font-weight: 500;
+    font-family: inherit;
+    background-color: #1a1a1a;
+    cursor: pointer;
+    transition: border-color 0.25s;
+  }
+  
+  button:hover {
+    border-color: #646cff;
+  }
+  
+  button:focus,
+  button:focus-visible {
+    outline: 4px auto -webkit-focus-ring-color;
+  }
+  
+  .auth-wrapper {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    width: 100%;
+    background: linear-gradient(#000000, #807f81);
+    position: fixed;
+    top: 0;
+    left: 0;
+    overflow: hidden;
+  }
+  
+  .auth-container {
+    display: flex;
+    justify-content: space-between;
+    gap: 200px;
+    max-width: 1300px;
+    width: 100%;
+    padding: 50px;
+    box-sizing: border-box;
+  }
+  
+  .login-container,
+  .sign-up-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 50%;
+    background-color: #ffffff11;
+    padding: 60px;
+    border-radius: 15px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    position: relative;
+  }
+  
+  .overlay {
+    position: absolute;
+    top: 0;
+    left: 50%; 
+    width: calc(50% + 100px); 
+    height: 100%;
+    background: linear-gradient(to right, #ff7e5f, #feb47b);
+    border-radius: 100px; 
+    transition: transform 0.5s ease;
+    z-index: 3;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1); 
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+  }
+  
+  
+  .overlay.move-left {
+    transform: translateX(-100%);
+  }
+  
+  .overlay-text {
+    font-size: 3em;
+    color: #000000; 
+    text-align: center;
+    margin: 0;
+  }
+  
+  .overlay-message {
+    font-size: 1.2em;
+    color: #2c2d2e; 
+    text-align: center;
+    margin-top: 20px;
+  }
+  
+  .overlay-message span {
+    color: #000000; 
+    cursor: pointer;
+    font-weight: 500;
+  }
+  
+  .overlay-message span:hover {
+    text-decoration: underline;
+  }
+  
+  .form-box {
+    width: 100%;
+    max-width: 500px;
+    text-align: center;
+  }
+  .user-type-selection {
+    justify-content: center;
+    width: 30%;
+    padding: 15px;
+    margin-bottom: 15px ;
+    border: 2px solid #ddd;
+    border-radius: 10px;
+    font-size: 1.2em;
+  }
+
+  input {
+    justify-content: center;
+    width: 80%;
+    padding: 15px;
+    margin: 15px 0;
+    border: 2px solid #ddd;
+    border-radius: 10px;
+    font-size: 1.2em;
+  }
+  
+  button {
+    width: 70%;
+    margin-top: 20px;
+    padding-top: 10px;
+    padding: 15px;
+    background-color: #404875;
+    color: #fff;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 1.2em;
+  }
+  
+  button:hover {
+    background-color: #191c2b;
+  }
+  
+  p {
+    font-size: 16px;
+    color: white;
+  }
+  
+  span {
+    color: #fcfcfc;
+    cursor: pointer;
+  }
+  
+  span:hover {
+    text-decoration: underline;
+    color: #191c2b;
+  }
+  
+  .login-container,
+  .sign-up-container {
+    width: 50%;
+    position: relative;
+    z-index: 2;
+  }
+
+  .auth-wrapper {
+    opacity: 0;
+    transform: translateY(20px);
+    transition: opacity 1s ease-in-out, transform 1s ease-in-out;
+    background-color: black;
+  }
+  
+  .auth-wrapper.fade-in {
+    opacity: 1;
+    transform: translateY(0);
+    background-color: transparent;
+  }
+  

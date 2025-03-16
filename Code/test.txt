@@ -1,0 +1,17 @@
+
+Important Command lines
+
+**Everytime you open the code**      ->              git status
+                                                     git pull
+
+
+make changes
+-->               control s to save them or it won't be counted as a change
+
+                   git add .
+
+                   git commit -m"DESCRIPTION"
+
+                   git push
+
+                 test
