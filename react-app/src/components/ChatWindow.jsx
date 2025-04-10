@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
-import { auth, db } from "../firebase";
+import { auth, db } from "../Firebase";
 import { collection, addDoc, query, where, onSnapshot, orderBy, getDocs } from "firebase/firestore";
 import "../Chat.css";
 
@@ -114,6 +114,7 @@ const ChatWindow = ({ userId }) => {
           placeholder={`Message @${recipient?.username || "User"}`}
           className="message-input"
         />
+      
         <button type="submit" className="send-button">
           Send
         </button>

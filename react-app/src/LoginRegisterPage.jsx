@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";  //import hooks from react, 
 //                                                  of components, useEffect is used to run side effects in components like data fetching and animations
 import "./LoginRegisterPage.css";
 import { getFirestore, doc, setDoc } from 'firebase/firestore';    //store users in database
-import { auth, db } from './firebase';
+import { auth, db } from './Firebase';
 import { createUserWithEmailAndPassword, signInWithEmailAndPassword } from 'firebase/auth';
 import { useAuth } from "../context/AuthContext";
 import { useNavigate } from "react-router-dom"; 
