@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
-import { auth, db } from "./firebase";
+import { auth, db, storage } from "./Firebase";
 import {
   collection,
   addDoc,
@@ -15,7 +15,19 @@ import {
 } from "firebase/firestore";
 import "./Chat.css";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faTrash } from '@fortawesome/free-solid-svg-icons';
+import { faCamera, faTrash } from '@fortawesome/free-solid-svg-icons';
+import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
+
+const ImageModal = ({ imageUrl, onClose }) => {
+  return (
+    <div className="modal-overlay" onClick={onClose}>
+      <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+        <img src={imageUrl} alt="Large view" className="modal-image" />
+        <button className="close-button" onClick={onClose}>Close</button>
+      </div>
+    </div>
+  );
+};
 
 const Chat = ({ userId, groupId }) => {
   const [messages, setMessages] = useState([]);
@@ -25,6 +37,10 @@ const Chat = ({ userId, groupId }) => {
   const [error, setError] = useState("");
   const [currentUser, setCurrentUser] = useState(null);
   const messagesEndRef = useRef(null);
+  const [image, setImage] = useState(null);
+  const fileInputRef = useRef(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [selectedImage, setSelectedImage] = useState(null);
 
   useEffect(() => {
     const fetchCurrentUser = async () => {
@@ -122,19 +138,31 @@ const Chat = ({ userId, groupId }) => {
 
   const sendMessage = async (e) => {
     e.preventDefault();
-    if (!auth.currentUser || !newMessage.trim()) return;
+    if (!auth.currentUser || (!newMessage.trim() && !image)) return;
 
     try {
       const senderName = currentUser?.username || auth.currentUser.email;
       console.log("Sending message with senderName:", senderName);
 
+      let messageData = {
+        senderId: auth.currentUser.uid,
+        senderName,
+        text: newMessage,
+        timestamp: serverTimestamp(),
+      };
+
+      if (image) {
+        const imageRef = ref(storage, `chatImages/${image.name}`);
+        await uploadBytes(imageRef, image);
+        const imageUrl = await getDownloadURL(imageRef);
+        messageData = { ...messageData, imageUrl };
+        setImage(null);
+      }
+
       if (groupId) {
         await addDoc(collection(db, "groupMessages"), {
+          ...messageData,
           groupId,
-          senderId: auth.currentUser.uid,
-          senderName,
-          text: newMessage,
-          timestamp: serverTimestamp(),
         });
       } else if (userId) {
         const chatId =
@@ -142,12 +170,9 @@ const Chat = ({ userId, groupId }) => {
             ? `${auth.currentUser.uid}_${userId}`
             : `${userId}_${auth.currentUser.uid}`;
         await addDoc(collection(db, "messages"), {
+          ...messageData,
           chatId,
-          senderId: auth.currentUser.uid,
-          senderName,
           receiverId: userId,
-          text: newMessage,
-          timestamp: serverTimestamp(),
         });
       }
 
@@ -155,6 +180,18 @@ const Chat = ({ userId, groupId }) => {
     } catch (error) {
       console.error("Error sending message:", error);
     }
+  };
+
+  const handleFileChange = (e) => {
+    const selectedFile = e.target.files[0];
+    if (selectedFile) {
+      setImage(selectedFile);
+      setNewMessage(`Selected file: ${selectedFile.name}`);
+    }
+  };
+
+  const handleFileSelect = () => {
+    fileInputRef.current.click();
   };
 
   const handleDeleteMessage = async (messageId) => {
@@ -173,6 +210,16 @@ const Chat = ({ userId, groupId }) => {
     } catch (error) {
       console.error("Error deleting message:", error);
     }
+  };
+
+  const openImageModal = (imageUrl) => {
+    setSelectedImage(imageUrl);
+    setIsModalOpen(true);
+  };
+
+  const closeImageModal = () => {
+    setIsModalOpen(false);
+    setSelectedImage(null);
   };
 
   if (loading) return <div className="loading">Loading...</div>;
@@ -205,23 +252,30 @@ const Chat = ({ userId, groupId }) => {
                     ? "You"
                     : msg.senderName || "Unknown User"}
                 </span>
-                <span className="message-time">
-                  {msg.timestamp?.seconds
-                    ? new Date(msg.timestamp.seconds * 1000).toLocaleTimeString()
-                    : "Sending..."}
-                </span>
                 {currentUser?.userType === "Admin" && (
                   <button onClick={() => handleDeleteMessage(msg.id)} className="delete-button">
                     <FontAwesomeIcon icon={faTrash} />
                   </button>
                 )}
               </div>
-              <div className="message-content">{msg.text}</div>
+              <div className="message-content">
+                {msg.text}
+                {msg.imageUrl && (
+                  <img
+                    src={msg.imageUrl}
+                    alt="Chat"
+                    className="message-image"
+                    onClick={() => openImageModal(msg.imageUrl)}
+                  />
+                )}
+              </div>
             </div>
           ))}
           <div ref={messagesEndRef} />
         </div>
       </div>
+
+      {isModalOpen && <ImageModal imageUrl={selectedImage} onClose={closeImageModal} />}
 
       <form onSubmit={sendMessage} className="message-input-container">
         <input
@@ -230,6 +284,17 @@ const Chat = ({ userId, groupId }) => {
           onChange={(e) => setNewMessage(e.target.value)}
           placeholder={`Message @${recipient?.username || "User"}`}
           className="message-input"
+        />
+        <button type="button" onClick={handleFileSelect} className="send-button">
+          <FontAwesomeIcon icon={faCamera} />
+        </button>
+        <input
+          type="file"
+          accept="image/*"
+          onChange={handleFileChange}
+          className="image-input"
+          ref={fileInputRef}
+          style={{ display: 'none' }}
         />
         <button type="submit" className="send-button">
           Send

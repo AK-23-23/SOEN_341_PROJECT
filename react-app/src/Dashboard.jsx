@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { auth, db } from './firebase';
+import { auth, db } from './Firebase';
 import { signOut } from 'firebase/auth';
 import { doc, getDoc, setDoc, collection, getDocs, deleteDoc, updateDoc } from 'firebase/firestore';
 import './Dashboard.css';
@@ -199,7 +199,7 @@ const Dashboard = () => {
               placeholder="New Group Name"
               className="group-input"
             />
-            <button onClick={handleCreateGroup} className="create-button">
+            <button onClick={handleCreateGroup} className="create-button" data-testid="create-group-button">
               <FontAwesomeIcon icon={faPlus} />
             </button>
           </div>
