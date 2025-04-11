@@ -11,6 +11,7 @@ jobs:
     runs-on: ubuntu-latest
     defaults:
       run:
+        # Set the working directory to your React application folder
         working-directory: react-app
 
     steps:
@@ -33,7 +34,7 @@ jobs:
       - name: Run ESLint
         run: npm run lint
 
-      # 5. Run Unit Tests (via Vitest).
+      # 5. Run Unit Tests via Vitest.
       - name: Run Unit Tests
         run: npm run test:unit
 
@@ -41,23 +42,21 @@ jobs:
       - name: Build Project
         run: npm run build
 
-      # 7. Start the preview server on port 5173.
-      # This command launches Vite's preview server on port 5173 in the background.
+      # 7. Start the preview server on port 5173 in the background.
       - name: Start Preview Server
         run: npm run preview -- --port 5173 &
 
-      # 8. Wait for the preview server to be ready using the wait-on action.
+      # 8. Wait for the preview server to be ready.
       - name: Wait for Server to be Ready
         uses: jakejarvis/wait-on@v2
         with:
           url: 'http://localhost:5173'
           timeout: 120
 
-      # 9. Run Cypress end-to-end tests.
+      # 9. Run Cypress E2E Tests.
       - name: Run Cypress E2E Tests
         uses: cypress-io/github-action@v4
         with:
-          # The preview server is already running, so we leave start empty.
-          start: ""
+          start: ""  # Server is already running; no need to start it here.
           wait-on: 'http://localhost:5173'
           wait-on-timeout: 120
