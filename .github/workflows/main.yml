@@ -9,9 +9,14 @@ on:
 jobs:
   ci:
     runs-on: ubuntu-latest
+
     defaults:
       run:
+
         working-directory: react-app # Set working directory to react-app
+
+
+
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v3
@@ -32,7 +37,6 @@ jobs:
       - name: Run ESLint
         run: npm run lint
 
-
       # 5. Run Unit Tests via Vitest.
       - name: Run Unit Tests
         run: npm run test:unit
@@ -40,6 +44,7 @@ jobs:
       # 6. Build the project.
       - name: Build Project
         run: npm run build
+
 
       # 7. Start the preview server on port 5173 in the background.
       - name: Start Preview Server
@@ -54,11 +59,11 @@ jobs:
         run: wait-on http://localhost:5173 --timeout 120000
 
 
-      # 9. Run Cypress E2E tests.
+      # 9. Run Cypress end-to-end tests.
       - name: Run Cypress E2E Tests
         uses: cypress-io/github-action@v4
         with:
-          # The preview server is already running, so no need to start it here.
+          # The preview server is already running, so we leave start empty.
           start: ""
           wait-on: 'http://localhost:5173'
           wait-on-timeout: 120
