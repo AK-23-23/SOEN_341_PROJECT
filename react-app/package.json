@@ -13,8 +13,6 @@
     "test:acceptance": "cypress run",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix"
-
-    
   },
   "dependencies": {
     "@fortawesome/free-solid-svg-icons": "^6.7.2",
