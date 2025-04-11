@@ -20,4 +20,8 @@ describe('Utility Functions', () => {
     expect(formatUserName('  John Doe  ')).toBe('John Doe');
   });
 
+<<<<<<< HEAD
 });
+=======
+});
+>>>>>>> 35ba0dd (Test fix)
