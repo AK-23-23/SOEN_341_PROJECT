@@ -208,7 +208,7 @@ function LoginRegisterPage() {
             </>
           ) : (
             <>
-              <h1 className="overlay-text">Welcome back!</h1>
+              <h1 className="overlay-text">Welcome Back!</h1>
               <p className="overlay-message">
                 Don't have an account?{" "}
                 <span onClick={() => setIsSignUp(true)}>Sign Up Now</span>

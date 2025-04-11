@@ -236,18 +236,19 @@ const Dashboard = () => {
       </div>
 
       <div className="main-content">
-        {userType === 'Admin' && <h2 className="admin-message">You logged in as an Admin</h2>}
+        {userType === 'Admin' && <h2 className="admin-message">You logged in as an Admin.</h2>}
 
         {selectedUser ? (
           <Chat userId={selectedUser} />
         ) : selectedGroup ? (
           <Chat groupId={selectedGroup} />
         ) : (
-          <div id="Welcome">Welcome back!</div>
+          <div id="Welcome">Welcome Back!</div>
         )}
       </div>
     </div>
   );
 };
+//Final Testing
 
 export default Dashboard;
