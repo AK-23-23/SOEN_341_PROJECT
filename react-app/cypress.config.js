@@ -5,3 +5,4 @@ export default defineConfig({
     baseUrl: 'http://localhost:5173'
   },
 });
+// Test Finalize this comment is to test the CI
