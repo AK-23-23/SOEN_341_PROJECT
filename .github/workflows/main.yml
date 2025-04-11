@@ -1,7 +1,8 @@
-name: Run Tests
+name: Continuous Integration
 
 on:
   push:
+<<<<<<< HEAD
     branches:
       - '**'
   pull_request:
@@ -9,12 +10,21 @@ on:
 jobs:
   unit-tests:
     name: Jest Unit Tests
+=======
+    branches: [main, master]
+  pull_request:
+    branches: [main, master]
+
+jobs:
+  ci:
+>>>>>>> a8d8b30 (Test Fix)
     runs-on: ubuntu-latest
     defaults:
       run:
         working-directory: react-app
 
     steps:
+<<<<<<< HEAD
       - name: Checkout code
         uses: actions/checkout@v4
 
@@ -22,10 +32,24 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: '20'
+=======
+      # 1. Checkout the repository.
+      - name: Checkout Repository
+        uses: actions/checkout@v3
 
-      - name: Install dependencies
-        run: npm install
+      # 2. Setup Node.js.
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+          cache: 'npm'
+>>>>>>> a8d8b30 (Test Fix)
 
+      # 3. Install dependencies.
+      - name: Install Dependencies
+        run: npm ci
+
+<<<<<<< HEAD
       - name: Run Jest tests
         run: npm test
 
@@ -59,3 +83,37 @@ jobs:
       - name: Run Cypress tests
         run: npm run cypress
 
+=======
+      # 4. Run ESLint for static code analysis.
+      - name: Run ESLint
+        run: npm run lint
+
+      # 5. Run Unit Tests (via Vitest).
+      - name: Run Unit Tests
+        run: npm run test:unit
+
+      # 6. Build the project.
+      - name: Build Project
+        run: npm run build
+
+      # 7. Start the preview server on port 5173.
+      # This command launches Vite's preview server on port 5173 in the background.
+      - name: Start Preview Server
+        run: npm run preview -- --port 5173 &
+
+      # 8. Wait for the preview server to be ready using the wait-on action.
+      - name: Wait for Server to be Ready
+        uses: jakejarvis/wait-on@v2
+        with:
+          url: 'http://localhost:5173'
+          timeout: 120
+
+      # 9. Run Cypress end-to-end tests.
+      - name: Run Cypress E2E Tests
+        uses: cypress-io/github-action@v4
+        with:
+          # The preview server is already running, so we leave start empty.
+          start: ""
+          wait-on: 'http://localhost:5173'
+          wait-on-timeout: 120
+>>>>>>> a8d8b30 (Test Fix)
