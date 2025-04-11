@@ -1,11 +1,11 @@
 describe('Normal User Dashboard Tests', () => {
     beforeEach(() => {
-      // Visit the LoginRegisterPage.
+      // Clear cookies and local storage, then visit the login page.
       cy.clearCookies();
-    cy.clearLocalStorage();
+      cy.clearLocalStorage();
       cy.visit('/');
   
-      // Target the sign-in form in the login-container.
+      // Enter login credentials.
       cy.get('.login-container .form-box.sign-in input[placeholder="Email"]')
         .should('be.visible')
         .type('user@conu.ca');
@@ -13,7 +13,7 @@ describe('Normal User Dashboard Tests', () => {
         .should('be.visible')
         .type('Password123!');
   
-      // Click the Login button in the sign-in form.
+      // Click the Login button.
       cy.get('.login-container .form-box.sign-in button')
         .contains('Login')
         .click();
@@ -23,10 +23,8 @@ describe('Normal User Dashboard Tests', () => {
     });
   
     it('does not display admin-specific UI elements', () => {
-      // Normal users should not see the admin header.
+      // Since we’re logged in as a normal user, admin elements shouldn’t exist.
       cy.contains('You logged in as an Admin').should('not.exist');
-  
-      // Normal users should not see any delete group buttons.
       cy.get('[data-testid="delete-group-button"]').should('not.exist');
     });
   
@@ -34,9 +32,8 @@ describe('Normal User Dashboard Tests', () => {
       cy.contains('General').should('be.visible');
       cy.contains('Project Help').should('be.visible');
       cy.contains('Social').should('be.visible');
-  
-      // Check for a user name (for example, "Justin Trudeau") as seen on the dashboard.
-      cy.contains('Justin Trudeau').should('be.visible');
+      // Example user name check:
+      cy.contains('Admin4').should('be.visible');
     });
   });
   
