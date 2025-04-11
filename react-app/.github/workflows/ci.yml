@@ -2,61 +2,59 @@ name: Continuous Integration
 
 on:
   push:
-    branches:
-      - main
+    branches: [main, master]
   pull_request:
-    branches:
-      - main
+    branches: [main, master]
 
 jobs:
   ci:
     runs-on: ubuntu-latest
 
     steps:
-      # 1. Checkout your repository
+      # 1. Checkout the repository.
       - name: Checkout Repository
         uses: actions/checkout@v3
 
-      # 2. Setup Node.js
+      # 2. Setup Node.js.
       - name: Setup Node.js
         uses: actions/setup-node@v3
         with:
           node-version: '18'
           cache: 'npm'
 
-      # 3. Install dependencies
+      # 3. Install dependencies.
       - name: Install Dependencies
         run: npm ci
 
-      # 4. Run ESLint for static code analysis
+      # 4. Run ESLint for static code analysis.
       - name: Run ESLint
         run: npm run lint
 
-      # 5. Run unit tests (via Vitest)
+      # 5. Run Unit Tests (via Vitest).
       - name: Run Unit Tests
         run: npm run test:unit
 
-      # 6. Build the project
+      # 6. Build the project.
       - name: Build Project
         run: npm run build
 
       # 7. Start the preview server on port 5173.
-      # We pass the port argument to ensure the preview server matches Cypress's baseUrl.
+      # This command launches Vite's preview server on port 5173 in the background.
       - name: Start Preview Server
         run: npm run preview -- --port 5173 &
-      
-      # 8. Wait for the preview server to be up (using the wait-on action)
+
+      # 8. Wait for the preview server to be ready using the wait-on action.
       - name: Wait for Server to be Ready
         uses: jakejarvis/wait-on@v2
         with:
           url: 'http://localhost:5173'
           timeout: 120
 
-      # 9. Run Cypress E2E tests
+      # 9. Run Cypress end-to-end tests.
       - name: Run Cypress E2E Tests
         uses: cypress-io/github-action@v4
         with:
-          # Since the preview server is already running, no need to start it here.
+          # The preview server is already running, so we leave start empty.
           start: ""
           wait-on: 'http://localhost:5173'
           wait-on-timeout: 120
