@@ -88,13 +88,13 @@
 }
 
 .message-author {
-  font-weight: 500;
+  font-weight: bolder;
   color: #fff;
 }
 
 .message-time {
   font-size: 12px;
-  color: #72767d;
+  color: #c3c5c7;
   flex-shrink: 0;
 }
 
@@ -208,4 +208,52 @@
 
 .delete-button:hover {
   color: #ff4d4d;
+}
+
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.8); /* Semi-transparent background */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 100; /* Ensure it appears above other content */
+}
+
+.modal-content {
+  position: relative;
+  max-width: 90%;
+  max-height: 90%;
+  background-color: #fff; /* White background for the modal */
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.modal-image {
+  width: 100%; /* Responsive image */
+  height: auto; /* Maintain aspect ratio */
+}
+
+.close-button {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background-color: #ff4d4d; /* Red close button */
+  color: white;
+  border: none;
+  border-radius: 5px;
+  padding: 5px 10px;
+  cursor: pointer;
+}
+
+.message-image {
+  max-width: 100%; /* Ensure the image does not exceed the width of its container */
+  max-height: 100px; /* Set a maximum height for the image in chat */
+  object-fit: contain; /* Ensures the image maintains its aspect ratio */
+  border-radius: 8px; /* Optional: adds rounded corners to the image */
+  margin-top: 5px; /* Adds some space above the image */
+  display: block; /* Ensures the image is treated as a block element */
 }

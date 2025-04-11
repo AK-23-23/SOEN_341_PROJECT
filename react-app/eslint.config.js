@@ -1,12 +1,15 @@
-import js from '@eslint/js'
-import globals from 'globals'
-import react from 'eslint-plugin-react'
-import reactHooks from 'eslint-plugin-react-hooks'
-import reactRefresh from 'eslint-plugin-react-refresh'
+import js from '@eslint/js';
+import globals from 'globals';
+import react from 'eslint-plugin-react';
+import reactHooks from 'eslint-plugin-react-hooks';
+import reactRefresh from 'eslint-plugin-react-refresh';
 
 export default [
-  { ignores: ['dist'] },
+  { 
+    ignores: ['dist'] 
+  },
   {
+    // Global configuration for all JS/JSX files
     files: ['**/*.{js,jsx}'],
     languageOptions: {
       ecmaVersion: 2020,
@@ -17,7 +20,9 @@ export default [
         sourceType: 'module',
       },
     },
-    settings: { react: { version: '18.3' } },
+    settings: { 
+      react: { version: '18.3' },
+    },
     plugins: {
       react,
       'react-hooks': reactHooks,
@@ -33,6 +38,33 @@ export default [
         'warn',
         { allowConstantExport: true },
       ],
+      // Customize additional rules here if desired.
     },
   },
-]
+  {
+    // Override configuration for test files (Jest and Cypress)
+    files: ['**/*.{test,spec,cy}.{js,jsx}'],
+    languageOptions: {
+      globals: {
+        ...globals.browser,
+        jest: true,         // Jest globals (describe, test, expect, etc.)
+        Cypress: true,      // Cypress global
+        cy: true,           // Cypress global
+        describe: true,
+        it: true,
+        beforeEach: true,
+        before: true,
+        afterEach: true,
+        after: true,
+      },
+      parserOptions: {
+        ecmaVersion: 'latest',
+        sourceType: 'module',
+      },
+    },
+    rules: {
+      // Optionally disable no-unused-vars in tests to reduce noise.
+      'no-unused-vars': 'off',
+    },
+  },
+];
