@@ -243,7 +243,7 @@ const Dashboard = () => {
         ) : selectedGroup ? (
           <Chat groupId={selectedGroup} />
         ) : (
-          <div id="Welcome">Welcome Back!</div>
+          <div id="Welcome">Welcome back!</div>
         )}
       </div>
     </div>
