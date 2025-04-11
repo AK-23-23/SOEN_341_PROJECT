@@ -1,0 +1,55 @@
+name: Continuous Integration
+
+on:
+  push:
+    branches: [ main, master ]
+  pull_request:
+    branches: [ main, master ]
+
+jobs:
+  ci:
+    runs-on: ubuntu-latest
+
+    steps:
+      # 1. Checkout the repository.
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      # 2. Setup Node.js (using version 18 and caching npm packages).
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+          cache: 'npm'
+
+      # 3. Install dependencies.
+      - name: Install dependencies
+        run: npm ci
+
+      # 4. Run ESLint for static code analysis.
+      - name: Run ESLint
+        run: npm run lint
+
+      # 5. Run unit tests (for example, via Vitest).
+      - name: Run Unit Tests
+        run: npm run test:unit
+
+      # 6. Build/Preview the application so that E2E tests have a URL to hit.
+      # Vite’s preview command is used here. By default, Vite preview uses port 4173.
+      - name: Build and Preview
+        run: npm run build && npm run preview &
+      
+      # 7. Wait for the preview server to be available.
+      - name: Wait for server to be ready
+        uses: jakejarvis/wait-on@v2
+        with:
+          url: 'http://localhost:4173'
+          timeout: 120
+
+      # 8. Run Cypress E2E tests.
+      - name: Run Cypress E2E Tests
+        uses: cypress-io/github-action@v4
+        with:
+          start: ''
+          wait-on: 'http://localhost:4173'
+          wait-on-timeout: 120
