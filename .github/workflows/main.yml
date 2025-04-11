@@ -16,7 +16,6 @@ jobs:
         working-directory: react-app # Set working directory to react-app
 
 
-
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v3
@@ -45,7 +44,6 @@ jobs:
       - name: Build Project
         run: npm run build
 
-
       # 7. Start the preview server on port 5173 in the background.
       - name: Start Preview Server
         run: npm run preview -- --port 5173 &
@@ -59,11 +57,11 @@ jobs:
         run: wait-on http://localhost:5173 --timeout 120000
 
 
-      # 9. Run Cypress end-to-end tests.
+      # 9. Run Cypress E2E tests.
       - name: Run Cypress E2E Tests
         uses: cypress-io/github-action@v4
         with:
-          # The preview server is already running, so we leave start empty.
+          # The preview server is already running, so no need to start it here.
           start: ""
           wait-on: 'http://localhost:5173'
           wait-on-timeout: 120
