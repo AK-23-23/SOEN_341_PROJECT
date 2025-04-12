@@ -22,8 +22,7 @@ jobs:
         uses: actions/setup-node@v3
         with:
           node-version: '18'       # Match your Node.js version
-          cache: 'npm'             # Cache npm dependencies
-          cache-dependency-path: react-app/package-lock.json # Point to lock file
+        
 
       # 3. Install dependencies.
       - name: Install Dependencies
