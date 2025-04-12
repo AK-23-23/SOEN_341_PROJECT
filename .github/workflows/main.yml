@@ -12,20 +12,19 @@ jobs:
 
     defaults:
       run:
-        # Set the working directory to your React application folder
-        working-directory: react-app
-
+        working-directory: react-app # Set working directory to react-app
     steps:
-      # 1. Checkout the repository.
       - name: Checkout Repository
         uses: actions/checkout@v3
+        with:
+          path: react-app          # Checkout into react-app directory
 
-      # 2. Setup Node.js.
       - name: Setup Node.js
         uses: actions/setup-node@v3
         with:
-          node-version: '18'
-          cache: 'npm'
+          node-version: '18'       # Match your Node.js version
+          cache: 'npm'             # Cache npm dependencies
+          cache-dependency-path: react-app/package-lock.json # Point to lock file
 
       # 3. Install dependencies.
       - name: Install Dependencies
@@ -55,6 +54,7 @@ jobs:
 
       - name: Wait for Server
         run: wait-on http://localhost:5173 --timeout 120000
+
 
       # 9. Run Cypress E2E tests.
       - name: Run Cypress E2E Tests
