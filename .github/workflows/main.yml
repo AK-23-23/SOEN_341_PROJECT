@@ -11,20 +11,21 @@ jobs:
     runs-on: ubuntu-latest
     defaults:
       run:
-        working-directory: react-app # Set working directory to react-app
+        working-directory: react-app
+
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v3
-        with:
-          path: react-app          # Checkout into react-app directory
+
+      - name: List Files in react-app
+        run: ls -l
 
       - name: Setup Node.js
         uses: actions/setup-node@v3
         with:
-          node-version: '18'       # Match your Node.js version
-        
+          node-version: '18'
+          cache: 'npm'
 
-      # 3. Install dependencies.
       - name: Install Dependencies
         run: npm ci
 
