@@ -1,68 +1,73 @@
 describe('Admin Dashboard Tests', () => {
   before(() => {
-    // Clear any previous session so that we log in fresh.
+    // Clear session and visit the login page.
     cy.clearCookies();
     cy.clearLocalStorage();
     cy.visit('/');
 
-    // Log in using the sign-in form in the login container.
+    // Log in as Admin.
     cy.get('.login-container .form-box.sign-in input[placeholder="Email"]')
       .should('be.visible')
-      .type('admin@conu.ca'); // Use your admin email
+      .type('admin@conu.ca');
     cy.get('.login-container .form-box.sign-in input[placeholder="Password"]')
       .should('be.visible')
-      .type('Password123!'); // Use your admin password
-
-    // Click the Login button
+      .type('Password123!');
     cy.get('.login-container .form-box.sign-in button')
       .contains('Login')
       .click();
 
-    // Verify we land on the dashboard.
+    // Verify that we land on the dashboard.
     cy.url().should('include', '/dashboard');
-    cy.wait(500); // Wait if necessary for data to load
+    cy.wait(500); // Wait for the dashboard UI to load.
   });
 
   it('allows admin to create a group, add Admin4 as a member, and then delete the group', () => {
-    // --- Create a new group ---
-    cy.get('input[placeholder="New Group Name"]')
+    // --- Create a New Group ---
+    // Scroll to the group input so it's visible.
+    cy.get('input.group-input')
+      .scrollIntoView({ duration: 1000 })
       .should('be.visible')
       .clear()
       .type('Test Group With Member');
     cy.get('[data-testid="create-group-button"]')
+      .scrollIntoView({ duration: 1000 })
       .should('be.visible')
       .click();
-    // Verify the group appears in the sidebar.
-    cy.contains('.group-list .group-item', 'Test Group With Member')
-      .should('exist');
 
-    // --- Select the new group so that the "Add Member" section appears ---
+    // Verify that the new group appears in the sidebar.
     cy.contains('.group-list .group-item', 'Test Group With Member')
+      .should('exist')
+      .scrollIntoView();
+
+    // --- Add a Member ---
+    // Select the new group so the "Add Member" section appears.
+    cy.contains('.group-list .group-item', 'Test Group With Member')
+      .scrollIntoView()
       .click();
 
-    // Verify the add member input is now visible.
-    cy.get('input[placeholder="Add Member ID"]').should('be.visible');
-
-    // --- Add a member "Justin Trudeau" ---
+    // Verify that the add member input is visible, then add "Admin4".
     cy.get('input[placeholder="Add Member ID"]')
+      .scrollIntoView({ duration: 1000 })
+      .should('be.visible')
       .clear()
       .type('Admin4');
-    // Click the add member button (assuming it has class "add-button" inside the add-member section)
-    cy.get('.add-member button.add-button').should('be.visible').click();
+    cy.get('.add-member button.add-button')
+      .scrollIntoView({ duration: 1000 })
+      .should('be.visible')
+      .click();
 
-    // Verify that the add member input is cleared, indicating the addition was processed.
+    // Check that the input field is cleared, indicating the member addition was processed.
     cy.get('input[placeholder="Add Member ID"]').should('have.value', '');
 
-    // Optionally, if the UI updates to show group members, you could assert that "Justin Trudeau" is now listed.
-    // Example: cy.contains('.group-members', 'Justin Trudeau').should('be.visible');
-
-    // --- Delete the newly created group ---
+    // --- Delete the Newly Created Group ---
     cy.contains('.group-list .group-item', 'Test Group With Member')
       .should('exist')
       .within(() => {
-        cy.get('button.delete-button').should('be.visible').click();
+        cy.get('button.delete-button')
+          .scrollIntoView({ duration: 1000 })
+          .should('be.visible')
+          .click();
       });
-    // Verify that the group no longer appears in the group list.
     cy.contains('.group-list .group-item', 'Test Group With Member').should('not.exist');
   });
 });
