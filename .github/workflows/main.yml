@@ -48,7 +48,7 @@ jobs:
 
       # New Step: Copy package-lock.json to repository root so Cypress can find it.
       - name: Copy Package Lock to Root
-        run: cp react-app/package-lock.json .
+        run: cp package-lock.json ../
 
       - name: Run Cypress E2E Tests
         uses: cypress-io/github-action@v4
