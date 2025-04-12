@@ -14,9 +14,11 @@ jobs:
         working-directory: react-app
 
     steps:
+      # 1. Checkout the repository.
       - name: Checkout Repository
         uses: actions/checkout@v3
 
+      # 2. Setup Node.js.
       - name: Setup Node.js
         uses: actions/setup-node@v3
         with:
@@ -24,35 +26,47 @@ jobs:
           cache: 'npm'
           cache-dependency-path: 'react-app/package-lock.json'
 
+      # 3. Install dependencies.
       - name: Install Dependencies
         run: npm ci
 
+      # 4. Run ESLint for static code analysis.
       - name: Run ESLint
         run: npm run lint
         continue-on-error: true
 
+      # 5. Run Unit Tests via Vitest.
       - name: Run Unit Tests
         run: npm run test:unit
 
+      # 6. Build the project.
       - name: Build Project
         run: npm run build
 
+      # 7. Start the preview server on port 5173 in the background.
       - name: Start Preview Server
         run: npm run preview -- --port 5173 &
 
+      # 8. Install wait-on globally.
       - name: Install wait-on
         run: npm install --global wait-on
 
+      # 9. Wait for the preview server to be ready.
       - name: Wait for Server
         run: wait-on http://localhost:5173 --timeout 120000
 
-      # New Step: Copy package-lock.json to repository root so Cypress can find it.
-      - name: Copy Package Lock to Root
-        run: cp package-lock.json ../
+      # 10. Copy package files to repository root so Cypress can find them.
+      # Since our working directory is "react-app", package.json and package-lock.json are here.
+      # We copy them to the repo root, where the Cypress action expects them.
+      - name: Copy Package Files to Root
+        run: |
+          cp package.json ../
+          cp package-lock.json ../
 
+      # 11. Run Cypress E2E tests.
       - name: Run Cypress E2E Tests
         uses: cypress-io/github-action@v4
         with:
-          start: ""  # Server is already running.
+          start: ""  # Preview server is already running.
           wait-on: 'http://localhost:5173'
           wait-on-timeout: 120
