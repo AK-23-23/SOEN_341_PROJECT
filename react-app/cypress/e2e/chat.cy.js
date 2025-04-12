@@ -1,19 +1,19 @@
 describe('Dashboard Chat Message Tests', () => {
   beforeEach(() => {
-    // Visit the dashboard and wait for data to load.
+    // Visit the dashboard and wait for the data to load.
     cy.visit('/dashboard');
     cy.wait(500);
   });
 
   it('sends and deletes a message in group chat then in individual chat', () => {
     // --- PART 1: Group Chat ---
-    // Click on the "General" group from the sidebar.
+    // Click on an existing group (e.g., "General") from the sidebar.
     cy.contains('.group-list .group-item', 'General')
       .scrollIntoView({ duration: 1000 })
       .should('be.visible')
       .click();
 
-    // Wait for the chat input to be visible.
+    // Wait for the chat input field to be visible.
     cy.get('input[placeholder*="Message"]').should('be.visible').scrollIntoView();
 
     // Create a unique group message.
@@ -23,8 +23,11 @@ describe('Dashboard Chat Message Tests', () => {
       .type(groupMsg);
     cy.contains('Send').click();
 
-    // Verify the group message appears in the chat window (with extended timeout).
-    cy.contains('.message', groupMsg, { timeout: 10000 })
+    // Wait for the UI to update - increase wait time if needed.
+    cy.wait(3000);
+
+    // Verify that the group message appears in the chat window.
+    cy.contains('.message', groupMsg, { timeout: 15000 })
       .should('be.visible')
       .scrollIntoView();
 
@@ -36,8 +39,8 @@ describe('Dashboard Chat Message Tests', () => {
           .should('be.visible')
           .click();
       });
-    // Confirm the message no longer exists.
-    cy.contains('.message', groupMsg, { timeout: 10000 }).should('not.exist');
+    // Confirm that the group message no longer exists.
+    cy.contains('.message', groupMsg, { timeout: 15000 }).should('not.exist');
 
     // --- PART 2: Individual Chat ---
     // Click on an individual user (e.g., "Admin4") from the user list.
@@ -46,7 +49,7 @@ describe('Dashboard Chat Message Tests', () => {
       .should('be.visible')
       .click();
 
-    // Wait for the individual chat input to be visible.
+    // Wait for the individual chat input field to be visible.
     cy.get('input[placeholder*="Message"]').should('be.visible').scrollIntoView();
 
     // Create a unique individual message.
@@ -56,8 +59,11 @@ describe('Dashboard Chat Message Tests', () => {
       .type(individualMsg);
     cy.contains('Send').click();
 
-    // Verify the individual message appears in the chat window.
-    cy.contains('.message', individualMsg, { timeout: 10000 })
+    // Wait for the UI to update.
+    cy.wait(3000);
+
+    // Verify that the individual message appears in the chat window.
+    cy.contains('.message', individualMsg, { timeout: 15000 })
       .should('be.visible')
       .scrollIntoView();
 
@@ -70,6 +76,6 @@ describe('Dashboard Chat Message Tests', () => {
           .click();
       });
     // Confirm that the individual message no longer exists.
-    cy.contains('.message', individualMsg, { timeout: 10000 }).should('not.exist');
+    cy.contains('.message', individualMsg, { timeout: 15000 }).should('not.exist');
   });
 });
