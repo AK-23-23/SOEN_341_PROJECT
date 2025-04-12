@@ -35,7 +35,7 @@ describe('Dashboard Chat Message Tests', () => {
   
       // --- PART 2: Individual Chat ---
       // Click on an individual user from the user list (e.g., "Justin Trudeau")
-      cy.contains('.user-list li', 'Justin Trudeau')
+      cy.contains('.user-list li', 'Admin4')
         .scrollIntoView()
         .should('be.visible')
         .click();

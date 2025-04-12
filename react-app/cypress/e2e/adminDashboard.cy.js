@@ -23,7 +23,7 @@ describe('Admin Dashboard Tests', () => {
     cy.wait(500); // Wait if necessary for data to load
   });
 
-  it('allows admin to create a group, add Justin Trudeau as a member, and then delete the group', () => {
+  it('allows admin to create a group, add Admin4 as a member, and then delete the group', () => {
     // --- Create a new group ---
     cy.get('input[placeholder="New Group Name"]')
       .should('be.visible')
@@ -46,7 +46,7 @@ describe('Admin Dashboard Tests', () => {
     // --- Add a member "Justin Trudeau" ---
     cy.get('input[placeholder="Add Member ID"]')
       .clear()
-      .type('Justin Trudeau');
+      .type('Admin4');
     // Click the add member button (assuming it has class "add-button" inside the add-member section)
     cy.get('.add-member button.add-button').should('be.visible').click();
 
