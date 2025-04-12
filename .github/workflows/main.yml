@@ -9,7 +9,6 @@ on:
 jobs:
   ci:
     runs-on: ubuntu-latest
-
     defaults:
       run:
         working-directory: react-app # Set working directory to react-app
