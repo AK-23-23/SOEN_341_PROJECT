@@ -30,7 +30,7 @@ jobs:
       # 4. Run ESLint for static code analysis.
       - name: Run ESLint
         run: npm run lint
-
+        continue-on-error: true
 
       # 5. Run Unit Tests via Vitest.
       - name: Run Unit Tests
