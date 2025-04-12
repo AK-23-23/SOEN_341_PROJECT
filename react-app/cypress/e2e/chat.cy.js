@@ -5,77 +5,93 @@ describe('Dashboard Chat Message Tests', () => {
   });
 
   it('sends and deletes a message in group chat then in individual chat', () => {
-    // --- PART 1: Group Chat ---
-    cy.contains('.group-list .group-item', 'General', { timeout: 20000 })
-      .scrollIntoView({ duration: 1000, easing: 'linear' })
+    // NOTE: Adjust the group name to exactly match your UI.
+    const groupName = 'General'; // or 'Group General' if that's what appears in the sidebar.
+    const userName = 'Justin Trudeau'; // Or whichever user is valid in your "Users" list.
+
+    cy.log(`Looking for group: "${groupName}"`);
+    cy.contains('.group-list .group-item', groupName, { timeout: 30000 })
+      .scrollIntoView({ duration: 1000 })
       .should('be.visible')
       .click({ force: true });
 
-    cy.get('input[placeholder*="Message"]', { timeout: 20000 })
-      .scrollIntoView({ duration: 1000, easing: 'linear' })
+    cy.log('Ensuring message input is visible for group chat...');
+    cy.get('input[placeholder*="Message"]', { timeout: 30000 })
+      .scrollIntoView({ duration: 1000 })
       .should('be.visible')
       .clear();
 
     const groupMsg = 'Group chat message ' + Date.now();
+    cy.log(`Typing group message: "${groupMsg}"`);
     cy.get('input[placeholder*="Message"]')
-      .type(groupMsg, { delay: 100 });
+      .type(groupMsg, { delay: 50 });
+    cy.log('Clicking Send...');
     cy.contains('Send')
-      .scrollIntoView({ duration: 1000, easing: 'linear' })
+      .scrollIntoView()
       .click({ force: true });
-      
-    // Wait for the message to be added.
-    cy.wait(4000);
 
-    cy.contains('.message', groupMsg, { timeout: 20000 })
+    cy.log('Waiting 7 seconds for the message to appear in Firebase...');
+    cy.wait(7000);
+
+    cy.log('Checking for the group message in the chat...');
+    // Depending on your DOM, ".message" might need to be ".message-content" or similar.
+    // If the text is in a child element, adjust the selector to match how your DOM is structured.
+    cy.contains('.message', groupMsg, { timeout: 30000 })
       .should('be.visible')
       .scrollIntoView();
 
-    // --- Delete the Group Message ---
+    cy.log('Deleting the group message...');
     cy.contains('.message', groupMsg)
       .within(() => {
-        cy.get('button.delete-button', { timeout: 20000 })
-          .scrollIntoView({ duration: 1000, easing: 'linear' })
+        cy.get('button.delete-button', { timeout: 30000 })
+          .scrollIntoView()
           .should('be.visible')
           .click({ force: true });
       });
-    cy.contains('.message', groupMsg, { timeout: 20000 })
+    cy.log('Checking that the group message is removed...');
+    cy.contains('.message', groupMsg, { timeout: 30000 })
       .should('not.exist');
 
-    // --- PART 2: Individual Chat ---
-    // Ensure using a valid user name from your dashboard that appears in the user list.
-    cy.contains('.user-list li', 'Admin4', { timeout: 20000 })
-      .scrollIntoView({ duration: 1000, easing: 'linear' })
+    // =========== INDIVIDUAL CHAT ===========
+    cy.log(`Clicking on user: "${userName}" from the user list`);
+    cy.contains('.user-list li', userName, { timeout: 30000 })
+      .scrollIntoView({ duration: 1000 })
       .should('be.visible')
       .click({ force: true });
 
-    cy.get('input[placeholder*="Message"]', { timeout: 20000 })
-      .scrollIntoView({ duration: 1000, easing: 'linear' })
+    cy.log('Ensuring message input is visible for the individual chat...');
+    cy.get('input[placeholder*="Message"]', { timeout: 30000 })
+      .scrollIntoView({ duration: 1000 })
       .should('be.visible')
       .clear();
 
     const individualMsg = 'Individual chat message ' + Date.now();
+    cy.log(`Typing individual message: "${individualMsg}"`);
     cy.get('input[placeholder*="Message"]')
-      .type(individualMsg, { delay: 100 });
+      .type(individualMsg, { delay: 50 });
+    cy.log('Clicking Send for individual chat...');
     cy.contains('Send')
-      .scrollIntoView({ duration: 1000, easing: 'linear' })
+      .scrollIntoView()
       .click({ force: true });
 
-    // Wait for the individual message to be added.
-    cy.wait(4000);
+    cy.log('Waiting 7 seconds for the individual message to appear...');
+    cy.wait(7000);
 
-    cy.contains('.message', individualMsg, { timeout: 20000 })
+    cy.log('Checking for the individual message in the chat...');
+    cy.contains('.message', individualMsg, { timeout: 30000 })
       .should('be.visible')
       .scrollIntoView();
 
-    // --- Delete the Individual Message ---
+    cy.log('Deleting the individual chat message...');
     cy.contains('.message', individualMsg)
       .within(() => {
-        cy.get('button.delete-button', { timeout: 20000 })
-          .scrollIntoView({ duration: 1000, easing: 'linear' })
+        cy.get('button.delete-button', { timeout: 30000 })
+          .scrollIntoView()
           .should('be.visible')
           .click({ force: true });
       });
-    cy.contains('.message', individualMsg, { timeout: 20000 })
+    cy.log('Checking that the individual message is removed...');
+    cy.contains('.message', individualMsg, { timeout: 30000 })
       .should('not.exist');
   });
 });
