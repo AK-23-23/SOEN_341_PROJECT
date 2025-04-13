@@ -60,3 +60,19 @@ The purpose of this project is to create a communication platform designed for i
 * React.js
 * Firebase & Node.js
 * Figma
+
+## Coding Style and Conventions
+
+This project follows several conventions to maintain code quality, consistency, and readability:
+
+* **Functional Components:** React components are primarily written as **functional components**, leveraging the modern Hooks API instead of class-based components.
+* **React Hooks:** Standard React Hooks (`useState`, `useEffect`, `useRef`, etc.) are used for managing state, side effects, and refs within components.
+* **Modular CSS:** Styling is organized using **separate `.css` files for each component** (e.g., `Dashboard.css`, `Chat.css`). This promotes style encapsulation and maintainability.
+* **`className` for Styling:** Styles defined in the CSS files are applied to JSX elements using the standard `className` attribute.
+* **Descriptive Naming:** Efforts are made to use descriptive names for components (PascalCase, e.g., `LoginRegisterPage`) and CSS classes (e.g., `fade-in`, `user-list`) to enhance code clarity.
+* **Separation of Concerns:** The codebase aims to separate concerns by keeping:
+    * UI rendering logic within the component files.
+    * Styling rules within dedicated CSS files.
+    * Business logic (like API interactions or complex state logic) potentially separated or managed cleanly within components/hooks.
+* **Modern JavaScript:** The project utilizes features from modern JavaScript (ES6 and newer) where appropriate.
+
